@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Button from './Components/Button';
+import Button from './Button';
 
 class SignInForm extends Component {
   constructor(props) {

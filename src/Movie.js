@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import getRandomActor from './ActorData';
 import MovieDetails from './MovieDetails';
+import Button from './Button';
 
 class Movie extends Component {
   constructor(props) {
@@ -25,6 +26,9 @@ class Movie extends Component {
   }
 
   handleSwipe(swipedRight) {
+    if (swipedRight) {
+      this.props.onSaveMovie(this.state.movie);
+    }
     this.setState({movie: undefined}, () => {
       this.fetchMovie();
     });
@@ -53,8 +57,10 @@ class Movie extends Component {
     const {movie} = this.state;
     let view = <ActivityIndicator size="large" color="blue"/>
     if (movie) {
-      view = (
+      view = [
+        <Button key="signout-button" title="Sign Out" onPress={this.props.onSignOut}/>,
         <MovieDetails
+          key="moviedetails"
           title={movie.show_title}
           year={movie.release_year}
           runtime={movie.runtime}
@@ -64,7 +70,7 @@ class Movie extends Component {
           poster={movie.poster}
           onSwipe={this.handleSwipe}
           />
-      )
+      ];
     }
     return (
       <View style={styles.container}>

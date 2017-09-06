@@ -17,40 +17,66 @@ class App extends Component {
     };
     firebase.initializeApp(config);
     this.state = {
-      loggedIn: false,
-      message: ''
+      uid: null,
     }
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignUp = this.handleSignUp.bind(this);
+    this.handleSaveMovie = this.handleSaveMovie.bind(this);
+    this.handleSignOut = this.handleSignOut.bind(this);
   }
 
   componentWillMount() {
     firebase.auth().onAuthStateChanged((user) => {
-      this.setState({loggedIn: !!user})
+      if (user) {
+        this.setState({uid: user.uid})
+      } else {
+        this.setState({uid: null});
+      }
     });
   }
 
   handleSignIn(email, password) {
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(() => this.setState({loggedIn: true}))
+      .then((user) => this.setState({uid: user.uid}))
       .catch(() => this.setState({message: "Invalid username/password"}))
   }
 
   handleSignUp(email, password) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.warn("success?");
-        this.setState({loggedIn: true})
+      .then((user) => {
+        this.setState({uid: user.uid})
       })
       .catch((e) => {
-        console.warn(e);
         this.setState({message: "Could not create username/password"})
       })
   }
 
+  handleSignOut() {
+    firebase.auth().signOut()
+      .then(() => {
+        this.setState({uid: null, message: "Signed Out"});
+      })
+      .catch((error) => {
+        this.setState({uid: null, message: "Signed Out"});
+      });
+
+  }
+
+  handleSaveMovie(movieData) {
+    const {uid} = this.state;
+    if (uid) {
+      movieData.uid = uid;
+      let favKey = firebase.database().ref().child(`/user-fav/${uid}/favorite`).push().key;
+      update = {
+        [`/user-fav/${uid}/favorite/${favKey}`]: movieData
+      };
+      return firebase.database().ref().update(update);
+    }
+  }
+
   render() {
-    let view = <Movie />
-    if (!this.state.loggedIn) {
+    let view = <Movie onSaveMovie={this.handleSaveMovie} onSignOut={this.handleSignOut}/>
+    if (!this.state.uid) {
       view = [
         <Text key={'error-text'} style={{color: 'red'}}>{this.state.message}</Text>,
         <SignInForm key={'sigin'} onSignIn={this.handleSignIn} title="Sign In" />,

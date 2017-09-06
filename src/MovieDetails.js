@@ -62,7 +62,7 @@ class MovieDetails extends Component {
         <Animated.View
           {...this._panResponder.panHandlers}
           style={[this._position.getLayout(),
-                  {borderRadius: 10, margin: 5, height: '90%', backgroundColor: 'rgba(240,240,240,1)'}
+                  {borderRadius: 10, margin: 5, height: '95%', backgroundColor: 'rgba(240,240,240,1)'}
                  ]}>
           <View style={{justifyContent: 'space-around', margin: 25, alignItems: 'center'}}>
             <Text style={{textAlign: 'center', fontSize: 28}}>{title}</Text>
